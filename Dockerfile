@@ -17,7 +17,7 @@ RUN ln -s /micropython/ports/unix/micropython /usr/bin/micropython
 
 # Build micropython-lib for unix
 WORKDIR /micropython-unix-devenv
-RUN python3 lib_build.py
+RUN /usr/bin/python3 lib_build.py
 
 RUN mkdir /workspace
 WORKDIR /workspace

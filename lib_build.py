@@ -98,7 +98,7 @@ def build(output_path, micropython_path):
             manifest = manifestfile.ManifestFile(manifestfile.MODE_COMPILE, path_vars)
             manifest.execute(manifest_path)
 
-            # Compile all the files in the manifest.
+            # Compile all the moduels in the package.
             skip = False
             result = []
             for target in manifest.files():
@@ -148,8 +148,6 @@ def main():
     args = {}
     args['output'] = '/root/.micropython/lib'   # default sys.path
     args['micropython'] = '/micropython'
-
-    args['micropython'] = '/home/yjsong/Workspace/bw04/mpy/micropython' # FOR DEBUGGING
 
     if args['micropython']:
         sys.path.append(os.path.join(args['micropython'], "tools"))  # for manifestfile
