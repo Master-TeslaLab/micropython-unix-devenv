@@ -45,6 +45,20 @@ from pathlib import Path
 
 logger:logging.Logger = None
 
+# At the moment (release 1.21.1.0) in unix enviroment, micropython builtin 
+#  libraries are conflicting with micropython-lib due to old implementation 
+#  using unix-ffi.
+# This list is used to skip the micropython builtin libraries at micropython-lib
+#  compiling.
+# This list is extracted from help('modules') on micropython
+# example: https://github.com/micropython/micropython-lib/issues/742
+BUILTIN_LIBS = {'_asyncio','_thread','argparse','array','asyncio','binascii',
+                'btree','builtins','cmath','collections','cryptolib','deflate',
+                'errno','ffi','framebuf','gc','hashlib','heapq','io','json',
+                'machine','math','micropython','mip','os','platform','random',
+                're','requests','select','socket','ssl','struct','sys','termios',
+                'time','uasyncio','uctypes','websocket',}
+
 # Convert the tagged .py file into a .mpy file and copy to output directory.
 def _compile(
     tagged_path,
@@ -92,6 +106,9 @@ def build(output_path, micropython_path):
         for manifest_path in glob.glob(os.path.join(lib_dir, "**", "manifest.py"), recursive=True):
             # .../foo/manifest.py -> foo
             package_name = os.path.basename(os.path.dirname(manifest_path))
+            if package_name in BUILTIN_LIBS:
+                logger.info(f'Skipping package {package_name}...')
+                continue
             logger.info(f'Buiding package {package_name}...')
 
             # Compile the manifest.
@@ -102,6 +119,10 @@ def build(output_path, micropython_path):
             skip = False
             result = []
             for target in manifest.files():
+                module_names = set(os.path.dirname(target.target_path).split('/'))
+                if module_names & BUILTIN_LIBS:
+                    logger.info(f'> Skipping module {target.target_path}...')
+                    continue
                 logger.info(f'> Compiling {target.target_path}...')
                 if target.file_type != manifestfile.FILE_TYPE_LOCAL:
                     logger.error('> Non-local file not supported.')
@@ -122,6 +143,7 @@ def build(output_path, micropython_path):
 
             # Only continue whole package were compiled successfully.
             if skip:
+                logger.error(f'> Failed to build package {package_name}')
                 for r in result:
                     if r['mpy']:
                         r['mpy'].close() # delete the temp file
@@ -136,8 +158,10 @@ def build(output_path, micropython_path):
                 r['mpy'].close() # delete the temp file
 
             # Build successful, add to package list.
-            package_list.append(package_name)
+            if len(result) > 0:
+                package_list.append(package_name)
 
+    package_list.sort()
     logger.info('Build complete.')
     logger.info(f'Build successful: {len(package_list)} packages.')
     for p in package_list:
