@@ -13,7 +13,7 @@ RUN git clone https://github.com/Master-TeslaLab/micropython-unix-devenv.git
 WORKDIR /micropython/ports/unix
 RUN latestTag=$(git describe --tags --abbrev=0) && git reset --hard $latestTag
 RUN make submodules && make
-RUN ln -s /micropython/ports/unix/micropython /usr/bin/micropython
+RUN ln -s /micropython/ports/unix/build-standard/micropython /usr/bin/micropython
 
 # Build micropython-lib for unix
 WORKDIR /micropython-unix-devenv
@@ -22,4 +22,4 @@ RUN /usr/bin/python3 lib_build.py
 RUN mkdir /workspace
 WORKDIR /workspace
 
-ENTRYPOINT ["./micropython"]
+ENTRYPOINT ["/usr/bin/micropython"]
