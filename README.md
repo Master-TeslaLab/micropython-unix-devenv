@@ -24,16 +24,16 @@ Micropython unix port is also available as a snap package. The official micropyt
 ### Micropython REPL
 Micropython supports REPL. REPL is started by default when no arguments are passed to docker run command. To exit REPL press `Ctrl+D` or type `exit()`
 
-    docker run -it --rm micropython-unix-devenv
+    docker run -it --rm masterteslalab/micropython-unix-devenv
 
 ### Sample Code execution
-    docker run -it --rm micropython-unix-devenv ../micropython-unix-devenv/sample.py
+    docker run -it --rm masterteslalab/micropython-unix-devenv ../micropython-unix-devenv/sample.py
 
 ### User defined code execution
-    docker run -it --rm -v {LOCAL WORKSPACE}:/workspace micropython-unix-devenv {main.py or user .py file}
+    docker run -it --rm -v {LOCAL WORKSPACE}:/workspace masterteslalab/micropython-unix-devenv {main.py or user .py file}
 
 ### User defined code execution with REPL
-    docker run -it --rm -v {LOCAL WORKSPACE}:/workspace micropython-unix-devenv -i {main.py or user .py file}
+    docker run -it --rm -v {LOCAL WORKSPACE}:/workspace masterteslalab/micropython-unix-devenv -i {main.py or user .py file}
 
 ### Attach to container
-    docker run -it --rm --entrypoint /bin/bash micropython-unix-devenv
+    docker run -it --rm --entrypoint /bin/bash masterteslalab/micropython-unix-devenv
